@@ -3,7 +3,26 @@ import ReactDOM from 'react-dom';
 import 'bulma/css/bulma.min.css';
 import './index.css';
 import App from './App';
+
+import Amplify from 'aws-amplify';
+import config from './config';
+
 import * as serviceWorker from './serviceWorker';
+
+Amplify.configure({
+    Auth : {
+        mandatorySignIn : true,
+        region : config.cognito.REGION,
+        userPoolId : config.cognito.USER_POOL_ID,
+        userPoolWebClientId : config.cognito.APP_CLIENT_ID,
+        oauth : {
+            domain : "170hexal.auth.us-east-2.amazoncognito.com",
+            redirectSignIn : "http://localhost:3000/",
+            redirectSignOut : "http://localhost:3000/",
+            responseType : "token"
+        }
+    }
+});
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

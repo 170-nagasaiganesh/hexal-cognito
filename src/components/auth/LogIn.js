@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import FormErrors from "../FormErrors";
 import Validate from "../utility/FormValidation";
+import { Auth } from 'aws-amplify';
 
 class LogIn extends Component {
   state = {
@@ -34,6 +35,26 @@ class LogIn extends Component {
     }
 
     // AWS Cognito integration here
+    try {
+      const user = await Auth.signIn(
+        this.state.username,
+        this.state.password
+      );
+      console.log("Sign-In Response : ", user);
+      this.props.auth.setAuthStatus(true);
+      this.props.auth.setUser(user);
+      this.props.history.push('/');
+    } catch(error) {
+      let err = null;
+      !error.message ? err = {"message" : error} : err = error;
+      this.setState({
+        errors : {
+          ...this.state.errors,
+          cognito : error
+        }
+      })
+    }
+
   };
 
   onInputChange = event => {
@@ -92,6 +113,20 @@ class LogIn extends Component {
               </p>
             </div>
           </form>
+
+          <hr></hr>
+
+            <div className="field">
+              <p className="control">
+                <button className="button is-success" onClick={() => {
+                  console.log(Auth.federatedSignIn({ provider : 'Facebook' }));
+                }}>
+                  Facebook Sign-In
+                </button>
+              </p>
+            </div>
+
+
         </div>
       </section>
     );
